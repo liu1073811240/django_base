@@ -128,6 +128,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# 告诉系统，我们的图片在哪里
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
