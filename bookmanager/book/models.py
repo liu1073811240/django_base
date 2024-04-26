@@ -7,22 +7,34 @@ from django.db import models
 
 """
 
-1. 我们的模型类需要维承自models.Model
-2. 系统会自动为我们添加一个主键--id
-3. 字段
-    字段名=model.类型（选项)
-    字段名其实就是数据表的字段名
-    字段名不要使用python  mysql等关键字
+https://docs.djangoproject.com/en/3.1/
+
+1. 模型类 需要继承自 models.Model
+2. 定义属性
+    id 系统默认会生成
+    属性名=models.类型（选项）
     
-    char (M)
-    varchar(M)
-    M就是选项
+    2.1 属性名 对应 就是字段名
+        不要使用 python，MySQL关键字
+        不要使用连续的下划线（__）
+    2.2 类型  MySQL的类型  
+    2.3 选项  是否有默认值，是否唯一，是否为null
+            CharField 必须设置 max_length
+            verbose_name 主要是 admin站点使用
+            
+3. 改变表的名称
+    默认表的名称是： 子应用名_类名 都是小写
+    修改表的名字
+create table `qq_user` (
+    id int ,
+    name varchar(10) not null default ''
+)  
 
 """
 # 准备书籍列表信息的模型类
 class BookInfo(models.Model):
     # 创建字段，字段类型...
-    name = models.CharField(max_length=20, verbose_name='名称')
+    name = models.CharField(max_length=20, unique=True, verbose_name='名称')
     pub_date = models.DateField(verbose_name="发布日期", null=True)
     readcount = models.IntegerField(default=0, verbose_name='阅读量')
     commentcount = models.IntegerField(default=0, verbose_name='评论量')
@@ -43,7 +55,7 @@ class PeopleInfo(models.Model):
         (0, 'male'),
         (1, 'female')
     )
-    name = models.CharField(max_length=20, verbose_name='名称')
+    name = models.CharField(max_length=20, unique=True, verbose_name='名称')
     gender = models.SmallIntegerField(choices=GENDER_CHOICES, default=0, verbose_name='性别')
     description = models.CharField(max_length=200, null=True, verbose_name='描述信息')
     # 外键约束：人物属于哪本书
