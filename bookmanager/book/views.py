@@ -70,6 +70,32 @@ book.delete()
 BookInfo.objects.get(id=8).delete()
 BookInfo.objects.filter(id=9).delete()
 
+# 查询数据
+# get查询单一结果﹐如果不存在会抛出模型类.DoesNotExist异常。
+try:
+    book=BookInfo.objects.get(id=1)
+except BookInfo.DoesNotExist:
+    print('查询结果不存在')
+
+# all查询多个结果。
+BookInfo.objects.all()
+
+# count查询结果数量·
+BookInfo.objects.all().count()
+BookInfo.objects.count()
+
+# 过滤查询
+#实现SQL中的where功能·包括
+#
+# filter过滤出多个结果
+# exclude排除掉符合条件剩下的结果
+# get过滤单一结果
+
+#模型类名.objects.filter(属性名__运算符=值)   获取n个结果  n=0,1,2,. . .
+#模型类名.objects.exclude (属性名__运算符=值)    获取n个结果  n=0,1,2,. . .
+#模型类名.objects.get(属性名__运算符=值)    获取1个结果 或者 异常
+
+
 """
 
 
