@@ -1,5 +1,6 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpRequest, JsonResponse
+import json
 
 # Create your views here.
 # **views.py**文件用于编写Web应用视图。
@@ -98,6 +99,159 @@ BookInfo.objects.count()
 
 """
 
+def create_book(request):
+    book = BookInfo.objects.create(
+        name='redis基本入门',
+        pub_date='2000-1-1',
+        readcount=10
+    )
+
+    return HttpResponse("create")
+
+def shop(request, city_id, shop_id):
 
 
+    return JsonResponse({'city_id': city_id, 'shop_id': shop_id})
+
+# /get/?a=1&b=2&a=3
+def get(request):
+    query_params = request.GET
+    print(query_params)
+
+    a = request.GET.get('a')
+    b = request.GET.get('b')
+    alist = request.GET.getlist('a')
+    print(a)  # 3
+    print(b)  # 2
+    print(alist)  # ['1', '3']
+    return HttpResponse('OK')
+
+
+def register(request):
+    data = request.POST
+    print(data)
+
+    a = request.POST.get('username')
+    b = request.POST.get('password')
+    alist = request.POST.getlist('username')
+    print(a)
+    print(b)
+    print(alist)
+
+    return HttpResponse('OK')
+
+def json_data(request):
+    # json数据 不能通过request.POST获取数据
+    json_str = body = request.body
+    print(body)
+
+    json_str = json_str.decode()  # python3.6 无需执行此步
+    print(json_str)
+    req_data = json.loads(json_str)
+    print(req_data)
+
+    # 请求头
+    print(request.META)
+    print(request.META['CONTENT_TYPE'])  # 请求格式
+
+    return HttpResponse('json')
+
+def method(request):
+
+    print(request.method)
+    return HttpResponse('method')
+
+def response_test(request):
+    # return HttpResponse('res', status=300)
+
+    response = HttpResponse('itcast')
+    response.status_code = 400
+    response['itcast'] = 'Python'
+    return response
+
+def json_response(request):
+    info = {
+        'name': 'itcast',
+        'address': 'shunyi'
+    }
+    girl_friends = [
+        {
+            'name': 'itcast',
+            'address': 'shunyi'
+        },
+        {
+            'name': 'jack',
+            'address': 'changping'
+        }
+    ]
+
+    # data 返回的响应数据 一般是字典类型
+    # response = JsonResponse(data=info)
+    # response = JsonResponse(data=girl_friends, safe=False)
+
+    import json
+    data = json.dumps(girl_friends)
+    response = HttpResponse(data)
+
+    # return response
+
+    # 重定向
+    return redirect('http://www.itcast.com')
+
+
+# http://192.168.18.128:8000/set_cookie/?username=itcast&password=123
+def set_cookie(request):
+    # 1. 获取查询字符串数据
+    username = request.GET.get('username')
+    password = request.GET.get('password')
+    # 2. 服务器设置cookie信息
+    # 通过响应对象.set_cookie方法
+    response = HttpResponse('set_cookie')
+    # key, value=''
+    # man_age 是一个从秒数 响应开始 计数的一个秒数。
+    response.set_cookie('name', username, max_age=60*60)
+    response.set_cookie('password', password)
+
+    response.delete_cookie('name')
+
+    return response
+
+def get_cookie(request):
+    # 获取cookie
+    print(request.COOKIES)
+    name = request.COOKIES.get('name')
+
+    return HttpResponse(name)
+
+# session 是保存在服务器端, 数据相对安全
+# session需要依赖于cookie
+
+"""
+第一次请求http://127.0.0.1:8000/set_session/?username=itheima·
+我们在服务器端设置sesison信息服务器同时会生成一个sessionid的cookie信息·
+浏览器接收到这个信息之后﹖会把cookie数据保存起来
+
+第二次及其之后的请求都会携带这个sessionid．服务器会验证这个sessionid，验证没有问题会读取相关数据·实现业务逻辑
+
+"""
+
+def set_session(request):
+    # 1. 模拟获取用户信息
+    username = request.GET.get('username')
+    # 2. 设置session信息
+    # 假设我们通过模型查询到了用户的信息
+    user_id = 1
+
+    request.session['user_id'] = user_id
+    request.session['username'] = username
+
+    return HttpResponse('set_session')
+
+def get_session(request):
+    user_id = request.session.get('user_id')
+    username = request.session.get('username')
+
+    content = '{}.{}'.format(user_id, username)
+
+    return HttpResponse(content)
 
