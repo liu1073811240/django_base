@@ -1,7 +1,8 @@
 from django.urls import path, register_converter
 from book.views import (index, create_book, shop, get, register,
                         json_data, method, response_test, json_response,
-                        set_cookie, get_cookie, set_session, get_session)
+                        set_cookie, get_cookie, set_session, get_session,
+                        login, LoginView, OrderView)
 
 class MobileConverter:
     """自定义路由转换器：匹配手机号"""
@@ -41,6 +42,11 @@ urlpatterns = [
     path('get_cookie/', get_cookie),
     path('set_session/', set_session),
     path('get_session/', get_session),
+    path('login/', login),
+
+    # 类视图
+    path('163login/', LoginView.as_view()),
+    path('order/', OrderView.as_view())
 
 
 

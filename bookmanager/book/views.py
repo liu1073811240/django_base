@@ -212,7 +212,7 @@ def set_cookie(request):
     response.set_cookie('name', username, max_age=60*60)
     response.set_cookie('password', password)
 
-    response.delete_cookie('name')
+    # response.delete_cookie('name')
 
     return response
 
@@ -238,12 +238,21 @@ def get_cookie(request):
 def set_session(request):
     # 1. 模拟获取用户信息
     username = request.GET.get('username')
+    print(username)
     # 2. 设置session信息
     # 假设我们通过模型查询到了用户的信息
     user_id = 1
+    print(request.COOKIES)
 
     request.session['user_id'] = user_id
     request.session['username'] = username
+
+    # clear 删除session里的数据，但是key有保留
+    # request.session.clear()
+    # flush 是删除所有的数据，包括key
+    # request.session.flush()
+
+    request.session.set_expiry(3600)
 
     return HttpResponse('set_session')
 
@@ -254,4 +263,38 @@ def get_session(request):
     content = '{}.{}'.format(user_id, username)
 
     return HttpResponse(content)
+
+
+def login(request):
+    print(request.method)
+    if request.method == 'GET':
+        return HttpResponse('get 逻辑')
+    else:
+        return HttpResponse('post 逻辑')
+    # return HttpResponse('login')
+
+# 类视图
+# 1. 继承
+from django.views import View
+class LoginView(View):
+    def get(self, request):
+        return HttpResponse('GET GET GET')
+
+    def post(self, request):
+        return HttpResponse('POST POST POST')
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+# 订单视图
+# LoginRequiredMixin 判断只有登录才可以访问页面
+class OrderView(LoginRequiredMixin, View):
+    def get(self, request):
+        # 模拟了一个标记位
+        # isLogin = False
+        # if not isLogin:
+        #     return HttpResponse('你没有登录，跳转到整理页面中～～～')
+        return HttpResponse('GET 我的订单页面，这个页面必须登录')
+
+    def post(self, request):
+        return HttpResponse('POST 我的订单页面，这个页面必须登录')
+
 
